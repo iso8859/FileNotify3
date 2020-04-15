@@ -15,15 +15,29 @@ namespace FileNotify3
     {
         public class Watch
         {
+            // Personal id, put what you want, @id macro onChanged and other events
             public string id { get; set; }
+            // Path to watch, for example c:\temp
             public string path { get; set; }
-            // public bool directory { get; set; } // directory notifications is really strange, don't use it, only file
-            public bool recurse { get; set; }
+            // Filter for example *.txt, if missing *.* is default
             public string filter { get; set; }
+            // Watch for sub directories
+            public bool recurse { get; set; }
+            // onChanged must point the program to execute.
+            // onChangedArgs contains program arguments.
+            // You can use macro like @id, @file, @rename
+            // @id will be substitute with your id
+            // @file will be substitute with the file full path
+            // @oldFile will be substitute with the old file name (only for onRename)
+            // onChanged can contains @file, this mean default app to edit this file will be used
             public string onChanged { get; set; }
+            public string onChangedArgs { get; set; }
             public string onCreated { get; set; }
+            public string onCreatedArgs { get; set; }
             public string onDeleted { get; set; }
+            public string onDeletedArgs { get; set; }
             public string onRenamed { get; set; }
+            public string onRenamedArgs { get; set; }
         }
         public class Settings
         {
@@ -39,7 +53,7 @@ namespace FileNotify3
                     Settings result = new Settings()
                     {
                         watchList = new List<Watch>() {
-                            new Watch() { id = "T1", path = @"c:\temp", recurse = true }
+                            new Watch() { id = "T1", path = @"c:\temp", recurse = true, onChanged = "@file" }
                         }
                     };
                     File.WriteAllText(file, JObject.FromObject(result).ToString(Formatting.Indented));
@@ -53,9 +67,10 @@ namespace FileNotify3
         public class Event
         {
             public string action;
+            public string args;
             public WatcherChangeTypes type;
             public string file;
-            public string rename;
+            public string oldFile;
             public Watch watch;
 
             public System.Timers.Timer m_timer;
@@ -113,11 +128,11 @@ namespace FileNotify3
                     catch { }
                     if (isFile || type == WatcherChangeTypes.Deleted)
                     {
-                        Console.WriteLine("{0}:{1}:{2}", type, file, rename);
+                        Console.WriteLine("{0}:{1}:{2}", type, file, oldFile);
                         if (!string.IsNullOrEmpty(action))
                         {
-                            action = action.Replace("@file", file).Replace("@rename", rename).Replace("@id", watch.id);
-                            System.Diagnostics.Process.Start(action);
+                            action = action.Replace("@file", file).Replace("@oldFile", oldFile).Replace("@id", watch.id);
+                            System.Diagnostics.Process.Start(action, args);
                         }
                     }
                 }
@@ -163,14 +178,14 @@ namespace FileNotify3
                 //if (m_watch.directory)
                 //    NotifyFilter = NotifyFilter | NotifyFilters.DirectoryName;
                 IncludeSubdirectories = m_watch.recurse;
-                Changed += (s, e) => { NewEvent(new Event() { watch = m_watch, action = m_watch.onChanged, type = e.ChangeType, file = e.FullPath }); };
-                Created += (s, e) => { NewEvent(new Event() { watch = m_watch, action = m_watch.onCreated, type = e.ChangeType, file = e.FullPath }); };
+                Changed += (s, e) => { NewEvent(new Event() { watch = m_watch, action = m_watch.onChanged, args = m_watch.onChangedArgs, type = e.ChangeType, file = e.FullPath }); };
+                Created += (s, e) => { NewEvent(new Event() { watch = m_watch, action = m_watch.onCreated, args = m_watch.onCreatedArgs, type = e.ChangeType, file = e.FullPath }); };
                 Deleted += (s, e) => { 
-                    var ev = new Event() { watch = m_watch, action = m_watch.onDeleted, type = e.ChangeType, file = e.FullPath };
+                    var ev = new Event() { watch = m_watch, action = m_watch.onDeleted, args = m_watch.onDeletedArgs, type = e.ChangeType, file = e.FullPath };
                     ev.Execute();
                 };
                 Renamed += (s, e) => {
-                    var ev = new Event() { watch = m_watch, action = m_watch.onRenamed, type = e.ChangeType, file = e.FullPath, rename = e.OldFullPath };
+                    var ev = new Event() { watch = m_watch, action = m_watch.onRenamed, args = m_watch.onRenamedArgs, type = e.ChangeType, file = e.FullPath, oldFile = e.OldFullPath };
                     ev.Execute();
                 };
                 EnableRaisingEvents = true;
