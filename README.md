@@ -12,6 +12,8 @@ Extract zip file
 
 Open FileNotify3.json to customize it. Today you can see two profiles, one watch c:\temp and the other one watch c:\ftp
 
+Look here https://github.com/iso8859/FileNotify3/blob/master/FileNotify3.json
+
 Look at the file comment in https://github.com/iso8859/FileNotify3/blob/master/FileNotify3.cs for detailed infos
 
 Run it from command line
