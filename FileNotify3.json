@@ -1,3 +1,32 @@
 {
-
+  "watchList": [
+    {
+      "id": "T1",
+      "path": "c:\\temp",
+      "filter": null,
+      "recurse": true,
+      "onChanged": "@file",
+      "onChangedArgs": null,
+      "onCreated": null,
+      "onCreatedArgs": null,
+      "onDeleted": null,
+      "onDeletedArgs": null,
+      "onRenamed": null,
+      "onRenamedArgs": null
+    },
+    {
+      "id": "T2",
+      "path": "c:\\ftp",
+      "filter": null,
+      "recurse": true,
+      "onChanged": "sendmail.exe",
+      "onChangedArgs": "/to test@test.com /file @file",
+      "onCreated": null,
+      "onCreatedArgs": null,
+      "onDeleted": null,
+      "onDeletedArgs": null,
+      "onRenamed": null,
+      "onRenamedArgs": null
+    }
+  ]
 }
