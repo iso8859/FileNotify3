@@ -49,11 +49,11 @@ namespace FileNotify3
                 string file = Path.Combine(Path.GetDirectoryName(exe), Path.GetFileNameWithoutExtension(exe) + ".json");
                 if (!File.Exists(file))
                 {
-                    Directory.CreateDirectory(@"c:\temp");
                     Settings result = new Settings()
                     {
                         watchList = new List<Watch>() {
-                            new Watch() { id = "T1", path = @"c:\temp", recurse = true, onChanged = "@file" }
+                            new Watch() { id = "T1", path = @"c:\temp", recurse = true, onChanged = "@file" },
+                            new Watch() { id = "T2", path = @"c:\ftp", recurse = true, onChanged = "sendmail.exe", onChangedArgs = "/to test@test.com /file @file" }
                         }
                     };
                     File.WriteAllText(file, JObject.FromObject(result).ToString(Formatting.Indented));
