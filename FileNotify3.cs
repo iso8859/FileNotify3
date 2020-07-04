@@ -25,7 +25,7 @@ namespace FileNotify3
             public bool recurse { get; set; }
             // onChanged must point the program to execute.
             // onChangedArgs contains program arguments.
-            // You can use macro like @id, @file, @rename
+            // You can use macro like @id, @file, @oldFile
             // @id will be substitute with your id
             // @file will be substitute with the file full path
             // @oldFile will be substitute with the old file name (only for onRename)
@@ -132,6 +132,7 @@ namespace FileNotify3
                         if (!string.IsNullOrEmpty(action))
                         {
                             action = action.Replace("@file", file).Replace("@oldFile", oldFile).Replace("@id", watch.id);
+                            args = args.Replace("@file", file).Replace("@oldFile", oldFile).Replace("@id", watch.id);
                             System.Diagnostics.Process.Start(action, args);
                         }
                     }
